@@ -4,6 +4,26 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commit:** `feat: Implemented evaluation layer`
+
+### Added
+
+- Implemented evaluation metrics in `eval/metrics.py`:
+  - Token F1
+  - Answer accuracy
+  - Refusal rate
+  - Citation validity
+- Implemented evaluation runner in `eval/evaluate.py`.
+- Added support for evaluating:
+  - Dense retrieval
+  - Hybrid retrieval
+  - Development split
+  - Test split
+- Implemented result comparison in `eval/compare.py`.
+- Added JSON result output under `eval/results/`.
+
+## 07-10-2026
+
 **commmit:** `feat: Implemented streamlit`
 
 ### Added

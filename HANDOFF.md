@@ -126,18 +126,35 @@ streamlit run app.py
 
 The interface supports both dense ChromaDB retrieval and hybrid dense-plus-BM25 retrieval. It displays the cited chunks returned by the answer chain and shows the exact refusal when the evidence is insufficient.
 
+### Evaluation
+
+Implemented in:
+
+- `eval/metrics.py` for token F1, answer accuracy, refusal rate, and citation validity.
+- `eval/evaluate.py` for running dense or hybrid evaluation on development or test questions.
+- `eval/compare.py` for comparing dense and hybrid result summaries.
+
+Run development evaluation from the repository root:
+
+```powershell
+python eval/evaluate.py --method dense --split dev
+python eval/evaluate.py --method hybrid --split dev
+python eval/compare.py --split dev
+```
+
+Results are saved under `eval/results/`. Evaluation makes OpenAI API calls through the answer chain, so ingestion must be complete and `.env` must contain valid credentials first.
+
 ## Not completed yet
 
-- `eval/evaluate.py`, `eval/metrics.py`, and `eval/compare.py` still need implementation.
 - Tests are currently placeholders.
 - `README.md` still needs setup and run instructions.
 - `REPORT.md` still needs final metrics, comparison results, and failure analysis.
 
 ## Recommended next steps
 
-1. Implement evaluation for dense versus hybrid retrieval using development questions for document indices 0–9.
-2. Add tests for chunking, document isolation, RRF ordering, refusal behavior, citation validation, and the Streamlit interface.
-3. Add README setup and run instructions.
+1. Add tests for chunking, document isolation, RRF ordering, refusal behavior, citation validation, and the Streamlit interface.
+2. Add README setup and run instructions.
+3. Run development evaluation and inspect dense versus hybrid results.
 4. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
 
 ## Important safeguards

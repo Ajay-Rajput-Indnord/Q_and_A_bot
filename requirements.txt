@@ -4,3 +4,4 @@ pandas
 python-dotenv
 rank-bm25
 tiktoken
+streamlit
