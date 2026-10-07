@@ -1,2 +1,8 @@
 .env
 .venv/
+__pycache__/
+*.pyc
+data/processed/dense/*
+data/processed/bm25/*
+!data/processed/dense/.gitkeep
+!data/processed/bm25/.gitkeep
