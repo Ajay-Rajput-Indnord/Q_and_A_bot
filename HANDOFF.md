@@ -144,9 +144,27 @@ python eval/compare.py --split dev
 
 Results are saved under `eval/results/`. Evaluation makes OpenAI API calls through the answer chain, so ingestion must be complete and `.env` must contain valid credentials first.
 
+### Tests
+
+Added unit tests for:
+
+- Text cleaning and 512/64 chunking.
+- CSV validation and chunk metadata.
+- RRF ranking and result limits.
+- Prompt construction and invalid citation refusal.
+- Stable refusal text used by the Streamlit interface.
+
+The test files are under `tests/`. The source files passed Python syntax validation. The tests have not yet run in this environment because `pytest` is not installed.
+
+Install dependencies and run the test suite with:
+
+```powershell
+pip install -r requirements.txt
+pytest -q
+```
+
 ## Not completed yet
 
-- Tests are currently placeholders.
 - `README.md` still needs setup and run instructions.
 - `REPORT.md` still needs final metrics, comparison results, and failure analysis.
 

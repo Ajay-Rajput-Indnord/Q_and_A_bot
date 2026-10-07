@@ -4,6 +4,22 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commit:** `feat: Implemented tests`
+
+### Added
+
+- Added unit tests for text cleaning and chunking.
+- Added ingestion validation tests.
+- Added chunk metadata tests.
+- Added RRF ranking tests.
+- Added retrieval result-limit tests.
+- Added prompt construction tests.
+- Added invalid citation refusal tests.
+- Added Streamlit refusal-text validation tests.
+- Added `pytest` to `requirements.txt`.
+
+## 07-10-2026
+
 **commit:** `feat: Implemented evaluation layer`
 
 ### Added
