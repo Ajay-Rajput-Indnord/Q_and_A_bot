@@ -4,6 +4,25 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commit:** `feat: Implemeted retrieval part`
+
+### Added
+
+- Implemented dense retrieval using ChromaDB.
+- Added cosine-distance search with selected-document filtering.
+- Implemented BM25 search for lexical retrieval.
+- Added per-document BM25 index loading and querying.
+- Implemented hybrid retrieval using:
+  - Dense top-10 results
+  - BM25 top-10 results
+  - Reciprocal Rank Fusion with `k=60`
+  - Final top-5 fused chunks
+- Added a public `retrieve()` function supporting:
+  - `dense`
+  - `hybrid`
+
+## 07-10-2026
+
 **commit:** `feat: Implemented Ingestion part`
 
 ### Added

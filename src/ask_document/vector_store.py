@@ -43,3 +43,41 @@ def upsert_chunks(
         ],
         embeddings=[list(vector) for vector in embeddings],
     )
+
+
+def search_dense(
+    query_embedding: Sequence[float],
+    document_index: int,
+    *,
+    top_k: int = 10,
+    persist_directory: str | Path = "data/processed/dense",
+) -> list[dict[str, Any]]:
+    """Search ChromaDB while enforcing selected-document isolation."""
+    if top_k <= 0:
+        return []
+
+    collection = get_collection(persist_directory)
+    if collection.count() == 0:
+        return []
+
+    result = collection.query(
+        query_embeddings=[list(query_embedding)],
+        n_results=top_k,
+        where={"document_index": int(document_index)},
+        include=["documents", "metadatas", "distances"],
+    )
+    ids = (result.get("ids") or [[]])[0]
+    documents = (result.get("documents") or [[]])[0]
+    metadatas = (result.get("metadatas") or [[]])[0]
+    distances = (result.get("distances") or [[]])[0]
+
+    return [
+        {
+            "chunk_id": ids[position],
+            "text": documents[position],
+            "metadata": metadatas[position],
+            "score": 1.0 - float(distances[position]),
+            "retriever": "dense",
+        }
+        for position in range(len(ids))
+    ]

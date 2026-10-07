@@ -48,9 +48,48 @@ def build_and_save_bm25(
 
 
 def load_bm25_index(path: str | Path = "data/processed/bm25/bm25_by_document.pkl") -> dict[int, BM25Okapi]:
-    with Path(path).open("rb") as handle:
-        payload = pickle.load(handle)
+    payload = load_bm25_payload(path)
     return {
         int(document_index): BM25Okapi(value["tokenized"])
         for document_index, value in payload.items()
     }
+
+
+def load_bm25_payload(
+    path: str | Path = "data/processed/bm25/bm25_by_document.pkl",
+) -> dict[int, dict[str, Any]]:
+    with Path(path).open("rb") as handle:
+        return pickle.load(handle)
+
+
+def search_bm25(
+    query: str,
+    document_index: int,
+    *,
+    top_k: int = 10,
+    path: str | Path = "data/processed/bm25/bm25_by_document.pkl",
+) -> list[dict[str, Any]]:
+    """Search the BM25 index for one selected document only."""
+    if top_k <= 0:
+        return []
+
+    payload = load_bm25_payload(path)
+    document = payload.get(int(document_index))
+    if document is None:
+        return []
+
+    index = BM25Okapi(document["tokenized"])
+    scores = index.get_scores(tokenize(query))
+    ranked = sorted(range(len(scores)), key=lambda position: scores[position], reverse=True)
+    results: list[dict[str, Any]] = []
+    for position in ranked[:top_k]:
+        results.append(
+            {
+                "chunk_id": document["chunk_ids"][position],
+                "text": document["documents"][position],
+                "metadata": document["metadata"][position],
+                "score": float(scores[position]),
+                "retriever": "bm25",
+            }
+        )
+    return results
