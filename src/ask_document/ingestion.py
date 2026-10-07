@@ -76,7 +76,7 @@ def ingest(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Ingest Ask the Document source data")
+    parser = argparse.ArgumentParser(description="Ingest Q_and_A_bot source data")
     parser.add_argument("--documents", default=str(DEFAULT_DOCUMENTS_PATH))
     args = parser.parse_args()
     print(ingest(args.documents))

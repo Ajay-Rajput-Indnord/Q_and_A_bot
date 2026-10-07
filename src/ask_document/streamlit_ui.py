@@ -1,4 +1,4 @@
-"""Streamlit user interface for Ask the Document."""
+"""Streamlit user interface for Q_and_A_bot."""
 
 from __future__ import annotations
 
@@ -38,8 +38,8 @@ def _show_citations(result: dict) -> None:
 
 
 def run() -> None:
-    st.set_page_config(page_title="Ask the Document", page_icon="📄", layout="wide")
-    st.title("Ask the Document")
+    st.set_page_config(page_title="Q_and_A_bot", page_icon="📄", layout="wide")
+    st.title("Q_and_A_bot")
     st.write("Select one document and ask a question grounded only in that document.")
 
     try:

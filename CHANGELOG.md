@@ -4,6 +4,14 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commit:** `docs: updated the doc files`
+
+### Added
+
+- Updated the docs files
+
+## 07-10-2026
+
 **commit:** `feat: Implemented tests`
 
 ### Added

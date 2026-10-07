@@ -1,10 +1,10 @@
-# Ask the Document Handoff
+# Q_and_A_bot Final Handoff
 
 ## Current stage
 
 Date: 2026-10-07
 
-The project currently has a working ingestion, retrieval, and grounded answer-generation foundation for a Streamlit-based document Q&A bot. The source datasets are in `data/raw/`. The implementation is designed to answer questions only from one selected document at a time.
+Q_and_A_bot has a working ingestion, retrieval, grounded answer-generation, evaluation, and Streamlit foundation for the Week 7 project. The source datasets are in `data/raw/`. The implementation answers questions only from one selected document at a time, as required by the project brief.
 
 ## Confirmed technical decisions
 
@@ -154,7 +154,7 @@ Added unit tests for:
 - Prompt construction and invalid citation refusal.
 - Stable refusal text used by the Streamlit interface.
 
-The test files are under `tests/`. The source files passed Python syntax validation. The tests have not yet run in this environment because `pytest` is not installed.
+The test files are under `tests/`. The source files passed Python syntax validation. The tests could not be executed in this environment because the configured Python launcher could not start; this is an environment issue, not a reported test failure.
 
 Install dependencies and run the test suite with:
 
@@ -163,17 +163,41 @@ pip install -r requirements.txt
 pytest -q
 ```
 
-## Not completed yet
+## Final status
 
-- `README.md` still needs setup and run instructions.
-- `REPORT.md` still needs final metrics, comparison results, and failure analysis.
+Completed:
 
-## Recommended next steps
+- Proposal and design documentation.
+- Ingestion pipeline and persistent dense/BM25 indexes.
+- Dense baseline and hybrid retrieval.
+- Single-document filtering and grounded answer generation.
+- Citation display and exact refusal handling.
+- Streamlit interface.
+- Evaluation runner, metrics, comparison script, unit-test suite, README, and this handoff.
 
-1. Add tests for chunking, document isolation, RRF ordering, refusal behavior, citation validation, and the Streamlit interface.
-2. Add README setup and run instructions.
-3. Run development evaluation and inspect dense versus hybrid results.
-4. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
+Pending verification:
+
+- Run the unit tests in a working Python environment.
+- Run dense and hybrid development evaluations with a valid OpenAI API key.
+- Compare development results and record failure analysis in `REPORT.md`.
+- Freeze configuration, then run the held-out test evaluation for document indices 10–19.
+
+## Exact finalization commands
+
+From the repository root, after activating a working virtual environment and setting `OPENAI_API_KEY` in `.env`:
+
+```powershell
+pip install -r requirements.txt
+python -m pytest -q
+python -m src.ask_document.ingestion --documents data/raw/documents.csv
+python eval/evaluate.py --method dense --split dev
+python eval/evaluate.py --method hybrid --split dev
+python eval/compare.py --split dev
+python eval/evaluate.py --method hybrid --split test
+streamlit run app.py
+```
+
+Do not run the test evaluation until the development configuration is frozen. Add the resulting metrics and representative failures to `REPORT.md`.
 
 ## Important safeguards
 

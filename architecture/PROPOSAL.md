@@ -1,4 +1,4 @@
-# Ask the Document
+# Q_and_A_bot Proposal
 
 ## 1. Problem and user
 
