@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
-EMBEDDING_MODEL = "text-embedding-3-small"
+DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 def get_openai_client() -> OpenAI:
@@ -20,11 +20,16 @@ def get_openai_client() -> OpenAI:
     return OpenAI(api_key=api_key)
 
 
+def get_embedding_model() -> str:
+    load_dotenv()
+    return os.getenv("OPENAI_EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL)
+
+
 def embed_texts(
     texts: Sequence[str],
     *,
     client: OpenAI | None = None,
-    model: str = EMBEDDING_MODEL,
+    model: str | None = None,
     batch_size: int = 100,
 ) -> list[list[float]]:
     """Embed texts in batches and return vectors in input order."""
@@ -34,6 +39,7 @@ def embed_texts(
         return []
 
     client = client or get_openai_client()
+    model = model or get_embedding_model()
     vectors: list[list[float]] = []
     for start in range(0, len(texts), batch_size):
         batch = list(texts[start : start + batch_size])

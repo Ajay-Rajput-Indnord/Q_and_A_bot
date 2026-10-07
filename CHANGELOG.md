@@ -4,6 +4,24 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commmit:** `feat: Implemented streamlit`
+
+### Added
+
+- Added configurable embedding model support through `OPENAI_EMBEDDING_MODEL`.
+- Added `OPENAI_EMBEDDING_MODEL=text-embedding-3-small` to `.env.example`.
+- Added `get_embedding_model()` for loading the configured embedding model.
+- Updated document ingestion to use the embedding model from `.env`.
+- Updated query embedding generation to use the same configured model.
+- Updated `HANDOFF.md` with embedding model configuration details.
+
+### Changed
+
+- Replaced the hardcoded embedding model usage with environment-based configuration.
+- Kept `text-embedding-3-small` as the default model when no environment variable is provided.
+
+## 07-10-2026
+
 **commit:** `feat: Implemented answer generation layer`
 
 ### Added

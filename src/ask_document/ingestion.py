@@ -10,7 +10,7 @@ import pandas as pd
 
 from .bm25 import build_and_save_bm25
 from .chunking import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, chunk_text
-from .embeddings import EMBEDDING_MODEL, embed_texts
+from .embeddings import embed_texts, get_embedding_model
 from .vector_store import upsert_chunks
 
 
@@ -68,7 +68,7 @@ def ingest(
     return {
         "documents": len(frame),
         "chunks": len(chunks),
-        "embedding_model": EMBEDDING_MODEL,
+        "embedding_model": get_embedding_model(),
         "chunk_size": DEFAULT_CHUNK_SIZE,
         "chunk_overlap": DEFAULT_CHUNK_OVERLAP,
         "bm25_index": str(bm25_path),

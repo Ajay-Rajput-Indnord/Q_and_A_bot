@@ -11,6 +11,7 @@ The project currently has a working ingestion, retrieval, and grounded answer-ge
 - User interface: Streamlit, started with `streamlit run app.py`.
 - Vector database: local ChromaDB.
 - Dense embedding model: OpenAI `text-embedding-3-small`.
+- Embedding model configuration: `OPENAI_EMBEDDING_MODEL` in `.env`.
 - Dense similarity: cosine distance in ChromaDB.
 - Chunk size: 512 tokens.
 - Chunk overlap: 64 tokens.
@@ -110,9 +111,23 @@ result = answer_question(
 )
 ```
 
+### Streamlit interface
+
+Implemented in:
+
+- `app.py` as the Streamlit entry point.
+- `streamlit_ui.py` for document selection, retrieval-method selection, question input, answer display, citations, and error handling.
+
+Run the application from the repository root:
+
+```powershell
+streamlit run app.py
+```
+
+The interface supports both dense ChromaDB retrieval and hybrid dense-plus-BM25 retrieval. It displays the cited chunks returned by the answer chain and shows the exact refusal when the evidence is insufficient.
+
 ## Not completed yet
 
-- `streamlit_ui.py` and `app.py` still need the user interface.
 - `eval/evaluate.py`, `eval/metrics.py`, and `eval/compare.py` still need implementation.
 - Tests are currently placeholders.
 - `README.md` still needs setup and run instructions.
@@ -120,11 +135,10 @@ result = answer_question(
 
 ## Recommended next steps
 
-1. Implement `streamlit_ui.py` with document selection, question input, retrieval-method selection, answer display, and citation display.
-2. Connect `app.py` to the Streamlit UI.
-3. Implement evaluation for dense versus hybrid retrieval using development questions for document indices 0–9.
-4. Add tests for chunking, document isolation, RRF ordering, refusal behavior, and citation validation.
-5. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
+1. Implement evaluation for dense versus hybrid retrieval using development questions for document indices 0–9.
+2. Add tests for chunking, document isolation, RRF ordering, refusal behavior, citation validation, and the Streamlit interface.
+3. Add README setup and run instructions.
+4. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
 
 ## Important safeguards
 
