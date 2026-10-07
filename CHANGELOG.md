@@ -4,6 +4,22 @@ All notable changes to Q_and_A_bot are documented here.
 
 ## 07-10-2026
 
+**commit:** `feat: Implemented answer generation layer`
+
+### Added
+
+- Implemented grounded answer generation using the OpenAI chat API.
+- Added configurable chat model support through `OPENAI_CHAT_MODEL`.
+- Set the default chat model to `gpt-4o-mini`.
+- Added an evidence-only system prompt.
+- Added numbered evidence chunks for answer generation.
+- Added citation requirements using the format `[Chunk N]`.
+- Added citation extraction and validation.
+- Added exact refusal handling:
+
+
+## 07-10-2026
+
 **commit:** `feat: Implemeted retrieval part`
 
 ### Added

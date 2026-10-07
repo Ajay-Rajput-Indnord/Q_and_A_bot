@@ -4,7 +4,7 @@
 
 Date: 2026-10-07
 
-The project currently has a working ingestion and retrieval foundation for a Streamlit-based document Q&A bot. The source datasets are in `data/raw/`. The implementation is designed to answer questions only from one selected document at a time.
+The project currently has a working ingestion, retrieval, and grounded answer-generation foundation for a Streamlit-based document Q&A bot. The source datasets are in `data/raw/`. The implementation is designed to answer questions only from one selected document at a time.
 
 ## Confirmed technical decisions
 
@@ -19,6 +19,7 @@ The project currently has a working ingestion and retrieval foundation for a Str
 - RRF constant: 60.
 - Final context: top 5 fused chunks.
 - API key source: `OPENAI_API_KEY` in `.env`.
+- Chat model: configurable through `OPENAI_CHAT_MODEL`, defaulting to `gpt-4o-mini`.
 
 ## Completed
 
@@ -78,10 +79,39 @@ results = retrieve(
 
 The retrieval result contains `chunk_id`, `text`, `metadata`, `score`, and `retriever` fields.
 
+### Answer generation
+
+Implemented in:
+
+- `prompts.py` for the evidence-only system prompt and user prompt formatting.
+- `answer_chain.py` for retrieval, OpenAI chat completion, refusal handling, and citation validation.
+
+The answer chain:
+
+1. Retrieves evidence using dense or hybrid retrieval.
+2. Sends only the retrieved chunks to the chat model.
+3. Requires citations such as `[Chunk 1]`.
+4. Rejects empty or invalidly cited responses.
+5. Returns the exact refusal when evidence is missing or citations are invalid:
+
+```text
+I don't know from this document.
+```
+
+Example:
+
+```python
+from src.ask_document.answer_chain import answer_question
+
+result = answer_question(
+    question="What is the maximum stack size?",
+    document_index=3,
+    method="hybrid",
+)
+```
+
 ## Not completed yet
 
-- `answer_chain.py` still needs the grounded answer-generation flow.
-- `prompts.py` still needs the final system prompt and refusal rule.
 - `streamlit_ui.py` and `app.py` still need the user interface.
 - `eval/evaluate.py`, `eval/metrics.py`, and `eval/compare.py` still need implementation.
 - Tests are currently placeholders.
@@ -90,18 +120,11 @@ The retrieval result contains `chunk_id`, `text`, `metadata`, `score`, and `retr
 
 ## Recommended next steps
 
-1. Implement the grounded prompt and answer chain.
-2. Add citation validation and the exact refusal response:
-
-   ```text
-   I don't know from this document.
-   ```
-
-3. Implement `streamlit_ui.py` with document selection, question input, retrieval-method selection, answer display, and citation display.
-4. Connect `app.py` to the Streamlit UI.
-5. Implement evaluation for dense versus hybrid retrieval using development questions for document indices 0–9.
-6. Add tests for chunking, document isolation, RRF ordering, refusal behavior, and citation validation.
-7. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
+1. Implement `streamlit_ui.py` with document selection, question input, retrieval-method selection, answer display, and citation display.
+2. Connect `app.py` to the Streamlit UI.
+3. Implement evaluation for dense versus hybrid retrieval using development questions for document indices 0–9.
+4. Add tests for chunking, document isolation, RRF ordering, refusal behavior, and citation validation.
+5. Run the held-out test questions for document indices 10–19 only after the configuration is frozen.
 
 ## Important safeguards
 
