@@ -7,10 +7,8 @@ from typing import Iterable
 
 import tiktoken
 
-
 DEFAULT_CHUNK_SIZE = 512
 DEFAULT_CHUNK_OVERLAP = 64
-
 
 def clean_text(text: str) -> str:
     """Normalize whitespace while preserving paragraph boundaries."""

@@ -1,4 +1,5 @@
 from src.ask_document.retrieval import reciprocal_rank_fusion
+from src.ask_document.bm25 import content_tokens, tokenize
 
 
 def result(chunk_id: str, retriever: str) -> dict:
@@ -21,3 +22,19 @@ def test_rrf_returns_requested_number_of_results():
     fused = reciprocal_rank_fusion(results, top_k=2)
 
     assert len(fused) == 2
+
+
+def test_tokenize_preserves_technical_compounds():
+    tokens = tokenize("text-embedding-3-small and mo.ui.text v1.2.3")
+
+    assert "text-embedding-3-small" in tokens
+    assert "mo.ui.text" in tokens
+    assert "v1.2.3" in tokens
+
+
+def test_content_tokens_removes_question_filler_but_keeps_subject():
+    tokens = content_tokens("What are the parameters for mo.ui.text?")
+
+    assert "what" not in tokens
+    assert "parameters" in tokens
+    assert "mo.ui.text" in tokens

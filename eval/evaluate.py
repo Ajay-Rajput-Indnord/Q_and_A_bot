@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.ask_document.answer_chain import answer_question  # noqa: E402
+from src.ask_document.embeddings import get_openai_client  # noqa: E402
 try:
     from .metrics import evaluate_record, summarize  # noqa: E402
 except ImportError:
@@ -59,11 +60,14 @@ def run_evaluation(method: str, split: str, limit: int | None = None) -> dict[st
         records = records[:limit]
 
     evaluated: list[dict[str, Any]] = []
+    client = get_openai_client()
     for record in records:
         result = answer_question(
             question=record["question"],
             document_index=record["document_index"],
             method=method,
+            question_type=record["question_type"],
+            client=client,
         )
         evaluated_record = {
             **record,

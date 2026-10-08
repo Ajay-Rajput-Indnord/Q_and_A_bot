@@ -11,7 +11,44 @@ from rank_bm25 import BM25Okapi
 
 
 def tokenize(text: str) -> list[str]:
-    return re.findall(r"[\w]+", text.lower())
+    """Tokenize words while preserving technical compounds and their parts."""
+    compounds = re.findall(r"[a-z0-9_]+(?:[-.][a-z0-9_]+)+", text.lower())
+    simple = re.findall(r"[a-z0-9_]+", text.lower())
+    tokens = list(simple)
+    for compound in compounds:
+        tokens.append(compound)
+        tokens.extend(part for part in re.split(r"[-.]", compound) if part)
+    return tokens
+
+
+# These words are useful to BM25 (they help its document-frequency weighting),
+# but they are noise when measuring whether a retrieved chunk contains the
+# subject of a question.
+CONTENT_STOPWORDS = {
+    "a", "an", "and", "are", "be", "does", "for", "from", "how", "in",
+    "is", "it", "of", "on", "or", "the", "to", "was", "were", "what",
+    "when", "where", "which", "who", "why", "with", "do", "did", "can",
+    "could", "would", "should", "i", "we", "you", "they", "their", "this",
+    "that", "these", "those", "me", "my", "your", "our", "does", "have",
+    "has", "had", "about", "all", "any", "also", "than", "then", "into",
+}
+
+
+def content_tokens(text: str) -> list[str]:
+    """Return query/content tokens with conversational filler removed."""
+    tokens: list[str] = []
+    for token in tokenize(text):
+        if token in CONTENT_STOPWORDS:
+            continue
+        # Lightweight normalization is used only for reranking, not for the
+        # authoritative BM25 index. It handles common singular/plural pairs
+        # such as giant/giants and version/versions.
+        if token.endswith("ies") and len(token) > 4:
+            token = token[:-3] + "y"
+        elif token.endswith("s") and not token.endswith(("ss", "us", "is")) and len(token) > 3:
+            token = token[:-1]
+        tokens.append(token)
+    return tokens
 
 
 def build_and_save_bm25(

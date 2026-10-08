@@ -24,7 +24,7 @@ flowchart TD
     N --> O
     O --> P{Enough supporting evidence?}
     P -- No --> Q[Refusal response]
-    P -- Yes --> R[Local LLM answer chain]
+    P -- Yes --> R[Two-pass OpenAI answer chain]
     R --> S[Answer with chunk citations]
 ```
 
@@ -37,9 +37,9 @@ Components:
 - **ChromaDB collection:** Persists vectors and metadata locally for filtered similarity search.
 - **BM25 lexical index:** Provides exact-term retrieval for names, versions, rare entities, and technical terminology.
 - **Question normalization:** Trims input and validates the selected document index without rewriting the user's meaning.
-- **Retriever:** Runs dense and lexical searches against the selected document only.
+- **Retriever:** Runs dense and two lexical searches against the selected document only, then fuses and reranks the candidates.
 - **Evidence threshold and context builder:** Removes weak or duplicate results, orders evidence, and formats it for the prompt.
-- **Local LLM answer chain:** Answers only from the supplied evidence and emits citations tied to chunk IDs.
+- **Answer chain:** Uses two OpenAI chat-completion passes over the supplied evidence: a draft followed by a grounded completeness review, with citations tied to retrieved chunk positions.
 - **Evaluation runner:** Repeats the same retrieval and answer process over the labeled development or test questions and writes machine-readable metrics.
 
 ## 2. Ingestion and chunking
@@ -117,10 +117,10 @@ The baseline retrieves the top 10 chunks from ChromaDB by cosine similarity, fil
 
 The improved hybrid retriever uses:
 
-- Dense retrieval: top 10 ChromaDB results from the selected document.
-- BM25 retrieval: top 10 lexical results from the selected document.
-- RRF reranking: merge the two ranked lists using `score = Σ 1 / (60 + rank + 1)` and de-duplicate by `chunk_id`.
-- Final context: top 5 fused chunks, with adjacent chunks optionally added only when they remain within the token budget and belong to the same document.
+- Dense retrieval: top 20 ChromaDB results from the selected document.
+- BM25 retrieval: top 20 results for both the original query and a content-focused query from the selected document.
+- RRF reranking: merge the three ranked lists using `score = Σ 1 / (60 + rank + 1)`, retain a larger fusion pool, apply exact-term boosting, and de-duplicate by `chunk_id`.
+- Final context: top 8 fused chunks for ordinary questions and up to 16 for broad or multi-passage questions, with bounded adjacent chunks from the same document.
 
 The RRF constant is fixed at 60. The development set may be used to validate candidate count and context budget, but the same frozen values must be used for every test question.
 
@@ -302,4 +302,8 @@ This section is intentionally empty at the start of implementation. During the b
 
 | Change | Reason | Effect on results |
 |---|---|---|
-| _To be completed during build_ | _To be completed during build_ | _To be completed during build_ |
+| Increased dense/BM25 candidate pools from 10 to 20 and final context from 5 to 8; added bounded adjacent-chunk expansion. | Development retrieval exposed missed or split evidence. | Requires development re-evaluation; may improve multi-passage recall while increasing prompt size. |
+| Added concise, question-focused answer instructions and explicit handling for list, code, and multi-item questions. | Automatic token F1 was penalizing verbose answers and incomplete lists. | Requires development re-evaluation; intended to improve answer accuracy without changing the selected hybrid-search improvement. |
+| Evaluated 256/32, 512/64, and 768/96 chunk configurations on development questions and selected 512/64. | 512/64 provided the strongest balance of answer quality, refusal behavior, and citation validity. | Held-out test questions were not used for selection. |
+| Added adaptive context sizing for broad multi-item questions. | Multi-passage accuracy was lower than single-passage accuracy in development results. | Broad questions retrieve up to 16 chunks; simple questions retain the default context size. |
+| Preserved technical compounds in BM25 and added a small deterministic exact-term boost. | Technical and named-entity questions benefit from exact matches. | Improved development token accuracy without an additional model call; refusal rate must still be monitored. |

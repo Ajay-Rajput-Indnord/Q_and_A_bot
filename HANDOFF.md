@@ -16,9 +16,9 @@ Q_and_A_bot has a working ingestion, retrieval, grounded answer-generation, eval
 - Chunk size: 512 tokens.
 - Chunk overlap: 64 tokens.
 - Lexical retrieval: BM25 per document.
-- Hybrid retrieval: dense top-10 plus BM25 top-10, merged with Reciprocal Rank Fusion.
+- Hybrid retrieval: dense top-20 plus full-query and content-focused BM25 top-20 lists, merged with Reciprocal Rank Fusion, exact-term reranked, then expanded with nearby chunks from the selected document.
 - RRF constant: 60.
-- Final context: top 5 fused chunks.
+- Final context: top 8 fused chunks for ordinary questions and up to 16 for broad or multi-passage questions, plus bounded same-document neighbors.
 - API key source: `OPENAI_API_KEY` in `.env`.
 - Chat model: configurable through `OPENAI_CHAT_MODEL`, defaulting to `gpt-4o-mini`.
 
@@ -90,9 +90,9 @@ Implemented in:
 The answer chain:
 
 1. Retrieves evidence using dense or hybrid retrieval.
-2. Sends only the retrieved chunks to the chat model.
-3. Requires citations such as `[Chunk 1]`.
-4. Rejects empty or invalidly cited responses.
+2. Sends only the retrieved chunks to the chat model for a draft answer.
+3. Runs a second grounded review pass over the same evidence to recover omitted facts.
+4. Requires citations such as `[Chunk 1]` and rejects invalid citations.
 5. Returns the exact refusal when evidence is missing or citations are invalid:
 
 ```text
@@ -174,6 +174,12 @@ Completed:
 - Citation display and exact refusal handling.
 - Streamlit interface.
 - Evaluation runner, metrics, comparison script, unit-test suite, README, and this handoff.
+- Concise answer prompting and a manual semantic-review field in evaluation records.
+- Adaptive context sizing for broad list, options, steps, rules, and multi-item questions, up to 16 chunks.
+- Deterministic technical-token preservation, focused BM25 fusion, singular/plural normalization, and exact-term boosting.
+- Two-pass grounded answer generation for completeness and citation safety.
+
+The development chunk experiment selected 512-token chunks with 64-token overlap as the balanced configuration. Results are recorded in `REPORT.md`; the held-out test set was not used for this choice.
 
 Pending verification:
 

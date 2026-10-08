@@ -2,7 +2,19 @@
 .venv/
 __pycache__/
 *.pyc
-data/processed/dense/*
-data/processed/bm25/*
-!data/processed/dense/.gitkeep
-!data/processed/bm25/.gitkeep
+
+# Local caches and temporary workspace files
+.pytest_cache/
+.tiktoken-cache/
+.tmp/
+*.log
+.DS_Store
+
+# Generated local indexes and vector-store files
+data/processed/*
+*.sqlite3
+*.pkl
+
+# Generated evaluation outputs and failure artifacts
+eval/results/*
+eval/failures/*

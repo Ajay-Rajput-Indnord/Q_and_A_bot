@@ -1,6 +1,17 @@
 # Changelog
 
-All notable changes to Q_and_A_bot are documented here.
+## 08-10-2026
+
+**commit:** `feat: updated the code for better acc`
+
+### Improved retrieval recall
+
+- Keep a larger hybrid RRF pool before exact-term reranking.
+- Ignore conversational filler words when calculating lexical coverage.
+- Expand broad/list-question context from 12 to 16 chunks.
+- Fuse a second content-focused BM25 query for better entity and version recall.
+- Verified source syntax with Python bytecode compilation.
+
 
 ## 07-10-2026
 
